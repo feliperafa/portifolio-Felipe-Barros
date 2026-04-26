@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Felipe Barros | Senior Frontend Engineer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --cyan: #00e5ff;
+      --purple: #7b2fff;
+      --bg: #03030f;
+      --bg2: #07071a;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --card: rgba(255,255,255,0.03);
+      --border: rgba(0,229,255,0.15);
+      --glow-c: 0 0 20px rgba(0,229,255,0.3), 0 0 60px rgba(0,229,255,0.08);
+      --glow-p: 0 0 20px rgba(123,47,255,0.3), 0 0 60px rgba(123,47,255,0.08);
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Space Grotesk', sans-serif;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    ::-webkit-scrollbar { width: 3px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--cyan); border-radius: 2px; }
+
+    /* ─── CURSOR ─── */
+    #cursor-dot {
+      position: fixed; width: 8px; height: 8px;
+      background: var(--cyan); border-radius: 50%;
+      pointer-events: none; z-index: 9999;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 12px var(--cyan);
+      transition: transform 0.1s;
+    }
+    #cursor-ring {
+      position: fixed; width: 32px; height: 32px;
+      border: 1px solid rgba(0,229,255,0.5); border-radius: 50%;
+      pointer-events: none; z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: all 0.18s ease;
+    }
+    #cursor-dot.hovered { transform: translate(-50%,-50%) scale(2.5); }
+    #cursor-ring.hovered { transform: translate(-50%,-50%) scale(1.6); border-color: var(--cyan); }
+
+    /* ─── ORB BACKGROUNDS ─── */
+    .orb {
+      position: fixed; border-radius: 50%;
+      filter: blur(120px); opacity: 0.12;
+      pointer-events: none; z-index: 0;
+    }
+    .orb-1 { width: 600px; height: 600px; background: var(--cyan); top: -250px; right: -250px; animation: floatA 9s ease-in-out infinite; }
+    .orb-2 { width: 500px; height: 500px; background: var(--purple); bottom: 0; left: -250px; animation: floatB 12s ease-in-out infinite; }
+    @keyframes floatA { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-40px,40px)} }
+    @keyframes floatB { 0%,100%{transform:translate(0,0)} 50%{transform:translate(40px,-40px)} }
+
+    /* ─── NAVBAR ─── */
+    nav {
+      position: fixed; top: 0; width: 100%; z-index: 1000;
+      padding: 1.2rem 3rem;
+      display: flex; justify-content: space-between; align-items: center;
+      background: rgba(3,3,15,0.7); backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(0,229,255,0.08);
+      transition: padding 0.3s, background 0.3s;
+    }
+    nav.scrolled { padding: 0.8rem 3rem; background: rgba(3,3,15,0.95); }
+
+    .nav-logo {
+      font-family: 'Orbitron', sans-serif; font-weight: 900;
+      font-size: 1.1rem; color: var(--cyan); text-decoration: none;
+      letter-spacing: 3px;
+    }
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+    .nav-links a {
+      color: var(--muted); text-decoration: none;
+      font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase;
+      transition: color 0.3s; position: relative;
+    }
+    .nav-links a::after {
+      content: ''; position: absolute; bottom: -4px; left: 0;
+      width: 0; height: 1px; background: var(--cyan); transition: width 0.3s;
+    }
+    .nav-links a:hover { color: var(--cyan); }
+    .nav-links a:hover::after { width: 100%; }
+
+    /* ─── HERO ─── */
+    #hero {
+      position: relative; height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      text-align: center; overflow: hidden;
+    }
+    #canvas-bg {
+      position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0;
+    }
+    .hero-content {
+      position: relative; z-index: 1;
+      max-width: 860px; padding: 0 2rem;
+    }
+    .hero-badge {
+      display: inline-block;
+      padding: 0.35rem 1.2rem;
+      border: 1px solid rgba(0,229,255,0.4);
+      border-radius: 50px; color: var(--cyan);
+      font-size: 0.7rem; letter-spacing: 4px; text-transform: uppercase;
+      margin-bottom: 1.8rem;
+      animation: fadeDown 0.8s ease forwards; opacity: 0;
+      background: rgba(0,229,255,0.04);
+    }
+    .hero-name {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(2.8rem, 7vw, 5.5rem);
+      font-weight: 900; line-height: 1.05; margin-bottom: 0.6rem;
+      animation: fadeUp 0.8s ease 0.2s forwards; opacity: 0;
+    }
+    .grad-text {
+      background: linear-gradient(135deg, var(--cyan) 0%, var(--purple) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+
+    /* Glitch */
+    .glitch { position: relative; display: inline-block; }
+    .glitch::before, .glitch::after {
+      content: attr(data-text); position: absolute; top: 0; left: 0;
+      background: linear-gradient(135deg, var(--cyan), var(--purple));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      width: 100%;
+    }
+    .glitch::before {
+      clip-path: polygon(0 0, 100% 0, 100% 38%, 0 38%);
+      animation: glitchTop 4s infinite;
+    }
+    .glitch::after {
+      clip-path: polygon(0 62%, 100% 62%, 100% 100%, 0 100%);
+      animation: glitchBot 4s infinite;
+    }
+    @keyframes glitchTop {
+      0%,88%,100%{transform:translate(0);opacity:0}
+      89%{transform:translate(-3px,-2px);opacity:.9}
+      91%{transform:translate(3px,1px);opacity:0}
+      93%{transform:translate(-2px,0);opacity:.8}
+      95%{transform:translate(0);opacity:0}
+    }
+    @keyframes glitchBot {
+      0%,88%,100%{transform:translate(0);opacity:0}
+      89%{transform:translate(3px,2px);opacity:.9}
+      91%{transform:translate(-3px,-1px);opacity:0}
+      93%{transform:translate(2px,0);opacity:.8}
+      95%{transform:translate(0);opacity:0}
+    }
+
+    .hero-subtitle {
+      font-size: clamp(0.95rem, 2vw, 1.15rem);
+      color: var(--muted); margin-bottom: 0.8rem;
+      animation: fadeUp 0.8s ease 0.4s forwards; opacity: 0;
+    }
+    .hero-typing {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(0.75rem, 1.5vw, 0.9rem);
+      color: var(--cyan); letter-spacing: 2px;
+      min-height: 1.5em; margin-bottom: 2.5rem;
+      animation: fadeUp 0.8s ease 0.6s forwards; opacity: 0;
+    }
+    .cursor-blink {
+      display: inline-block; width: 2px; height: 1em;
+      background: var(--cyan); margin-left: 2px;
+      animation: blink 1s steps(1) infinite; vertical-align: text-bottom;
+    }
+    @keyframes blink { 0%,49%{opacity:1} 50%,100%{opacity:0} }
+
+    .hero-cta {
+      display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;
+      animation: fadeUp 0.8s ease 0.8s forwards; opacity: 0;
+    }
+
+    .scroll-hint {
+      position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+      color: var(--muted); font-size: 0.65rem; letter-spacing: 3px; text-transform: uppercase;
+      animation: bounce 2.5s ease-in-out infinite;
+    }
+    .scroll-hint .line {
+      width: 1px; height: 50px;
+      background: linear-gradient(to bottom, var(--cyan), transparent);
+    }
+    @keyframes bounce { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(10px)} }
+
+    /* ─── BUTTONS ─── */
+    .btn {
+      padding: 0.8rem 2rem; border-radius: 6px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.8rem; font-weight: 600; letter-spacing: 2px; text-transform: uppercase;
+      text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;
+      transition: all 0.3s ease; cursor: none;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--cyan), var(--purple));
+      color: #000; border: none;
+    }
+    .btn-primary:hover { transform: translateY(-4px); box-shadow: 0 12px 35px rgba(0,229,255,0.35); }
+    .btn-outline {
+      background: transparent; color: var(--cyan);
+      border: 1px solid rgba(0,229,255,0.5);
+    }
+    .btn-outline:hover { background: rgba(0,229,255,0.08); transform: translateY(-4px); box-shadow: 0 12px 35px rgba(0,229,255,0.15); }
+
+    /* ─── SECTION WRAPPER ─── */
+    .sw { max-width: 1120px; margin: 0 auto; padding: 7rem 2rem; }
+
+    .sec-label {
+      font-family: 'Orbitron', sans-serif; font-size: 0.65rem;
+      letter-spacing: 4px; text-transform: uppercase; color: var(--cyan);
+      margin-bottom: 0.8rem; display: flex; align-items: center; gap: 1rem;
+    }
+    .sec-label::after {
+      content: ''; flex: 1; height: 1px;
+      background: linear-gradient(to right, rgba(0,229,255,0.3), transparent);
+      max-width: 120px;
+    }
+    .sec-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 700; margin-bottom: 3rem; line-height: 1.2;
+    }
+
+    /* ─── REVEAL ─── */
+    .reveal { opacity: 0; transform: translateY(50px); transition: all 0.9s cubic-bezier(0.16,1,0.3,1); }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-left { opacity: 0; transform: translateX(-50px); transition: all 0.9s cubic-bezier(0.16,1,0.3,1); }
+    .reveal-left.visible { opacity: 1; transform: translateX(0); }
+    .reveal-right { opacity: 0; transform: translateX(50px); transition: all 0.9s cubic-bezier(0.16,1,0.3,1); }
+    .reveal-right.visible { opacity: 1; transform: translateX(0); }
+
+    /* ─── ABOUT ─── */
+    .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center; }
+    .about-text p { color: var(--muted); line-height: 1.9; margin-bottom: 1.1rem; font-size: 1rem; }
+    .about-text p .hl { color: var(--cyan); font-weight: 600; }
+
+    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .stat-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 16px; padding: 2rem; text-align: center;
+      position: relative; overflow: hidden;
+      transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+    }
+    .stat-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(to right, var(--cyan), var(--purple));
+    }
+    .stat-card:hover { transform: translateY(-6px); border-color: rgba(0,229,255,0.4); box-shadow: var(--glow-c); }
+    .stat-num {
+      font-family: 'Orbitron', sans-serif; font-size: 2.8rem; font-weight: 900;
+      background: linear-gradient(135deg, var(--cyan), var(--purple));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      display: block;
+    }
+    .stat-lbl { color: var(--muted); font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; margin-top: 0.4rem; }
+
+    /* ─── SKILLS ─── */
+    .skills-section { text-align: left; }
+    .skills-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 1.2rem; }
+    .skill-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 1.8rem 1rem; text-align: center;
+      transition: all 0.4s cubic-bezier(0.16,1,0.3,1); position: relative; overflow: hidden;
+    }
+    .skill-card::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(0,229,255,0.06), rgba(123,47,255,0.06));
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .skill-card:hover { transform: translateY(-8px) scale(1.03); border-color: rgba(0,229,255,0.5); box-shadow: var(--glow-c); }
+    .skill-card:hover::after { opacity: 1; }
+    .skill-icon { font-size: 2.2rem; margin-bottom: 0.7rem; display: block; }
+    .skill-name { font-family: 'Orbitron', sans-serif; font-size: 0.62rem; letter-spacing: 2px; color: var(--cyan); text-transform: uppercase; }
+    .skill-bar { width: 100%; height: 2px; background: rgba(255,255,255,0.08); border-radius: 1px; margin-top: 1rem; overflow: hidden; }
+    .skill-fill { height: 100%; background: linear-gradient(to right, var(--cyan), var(--purple)); border-radius: 1px; width: 0; transition: width 1.6s cubic-bezier(0.16,1,0.3,1); }
+
+    /* ─── EXPERIENCE ─── */
+    .timeline { position: relative; padding-left: 2rem; }
+    .timeline::before {
+      content: ''; position: absolute; left: 0; top: 0.6rem; bottom: 0;
+      width: 1px; background: linear-gradient(to bottom, var(--cyan), var(--purple), transparent);
+    }
+    .tl-item { position: relative; margin-bottom: 2.5rem; padding-left: 2rem; }
+    .tl-item::before {
+      content: ''; position: absolute; left: -2.35rem; top: 0.6rem;
+      width: 10px; height: 10px; border-radius: 50%;
+      background: var(--cyan); box-shadow: 0 0 16px var(--cyan);
+      border: 2px solid var(--bg);
+    }
+    .tl-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 16px; padding: 2rem;
+      position: relative; overflow: hidden;
+      transition: transform 0.4s ease, border-color 0.4s, box-shadow 0.4s;
+    }
+    .tl-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(to right, var(--cyan), transparent);
+    }
+    .tl-card:hover { transform: translateX(10px); border-color: rgba(0,229,255,0.4); box-shadow: var(--glow-c); }
+
+    .tl-period { font-family: 'Orbitron', sans-serif; font-size: 0.62rem; letter-spacing: 2px; color: var(--cyan); text-transform: uppercase; margin-bottom: 0.5rem; }
+    .tl-company { font-size: 1.3rem; font-weight: 700; margin-bottom: 0.25rem; }
+    .tl-role { color: var(--muted); font-size: 0.9rem; margin-bottom: 1rem; }
+    .tl-desc { color: var(--muted); font-size: 0.9rem; line-height: 1.75; }
+    .tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.2rem; }
+    .tag {
+      padding: 0.25rem 0.8rem; border: 1px solid rgba(0,229,255,0.25);
+      border-radius: 50px; font-size: 0.68rem; color: var(--cyan); letter-spacing: 1px;
+      background: rgba(0,229,255,0.04);
+    }
+
+    /* ─── EDUCATION ─── */
+    .edu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
+    .edu-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 16px; padding: 2rem;
+      position: relative; overflow: hidden;
+      transition: transform 0.4s ease, border-color 0.4s, box-shadow 0.4s;
+    }
+    .edu-card::before {
+      content: ''; position: absolute; top: 0; left: 0; bottom: 0; width: 2px;
+      background: linear-gradient(to bottom, var(--purple), var(--cyan));
+    }
+    .edu-card:hover { transform: translateY(-6px); border-color: rgba(123,47,255,0.5); box-shadow: var(--glow-p); }
+    .edu-icon { font-size: 2.2rem; margin-bottom: 1rem; display: block; }
+    .edu-degree { font-size: 1.05rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .edu-inst { color: var(--cyan); font-size: 0.82rem; margin-bottom: 0.5rem; line-height: 1.4; }
+    .edu-period { color: var(--muted); font-size: 0.72rem; font-family: 'Orbitron', sans-serif; letter-spacing: 1px; }
+
+    /* ─── CONTACT ─── */
+    .contact-wrap { text-align: center; }
+    .contact-wrap p { color: var(--muted); line-height: 1.9; font-size: 1.1rem; max-width: 500px; margin: 0 auto 3rem; }
+    .contact-btns { display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap; }
+
+    /* ─── FOOTER ─── */
+    footer {
+      text-align: center; padding: 2rem;
+      color: var(--muted); font-size: 0.78rem;
+      border-top: 1px solid rgba(255,255,255,0.05); letter-spacing: 1px;
+    }
+    footer span { color: var(--cyan); }
+
+    /* ─── KEYFRAMES ─── */
+    @keyframes fadeDown { from{opacity:0;transform:translateY(-20px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes fadeUp   { from{opacity:0;transform:translateY(24px)}  to{opacity:1;transform:translateY(0)} }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 768px) {
+      nav { padding: 1rem 1.5rem; }
+      nav.scrolled { padding: 0.7rem 1.5rem; }
+      .nav-links { display: none; }
+      .about-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+      .sw { padding: 5rem 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Custom cursor -->
+<div id="cursor-dot"></div>
+<div id="cursor-ring"></div>
+
+<!-- Orb backgrounds -->
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+
+<!-- ─── NAVBAR ─── -->
+<nav id="nav">
+  <a href="#hero" class="nav-logo">FB</a>
+  <ul class="nav-links">
+    <li><a href="#about">Sobre</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#experience">Experiência</a></li>
+    <li><a href="#education">Formação</a></li>
+    <li><a href="#contact">Contato</a></li>
+  </ul>
+</nav>
+
+<!-- ─── HERO ─── -->
+<section id="hero">
+  <canvas id="canvas-bg"></canvas>
+  <div class="hero-content">
+    <div class="hero-badge">&#9679;&nbsp; Disponível para oportunidades</div>
+    <h1 class="hero-name">
+      <span class="glitch grad-text" data-text="Felipe Barros">Felipe Barros</span>
+    </h1>
+    <p class="hero-subtitle">Senior Frontend Engineer &amp; Tech Lead</p>
+    <div class="hero-typing"><span id="typed"></span><span class="cursor-blink"></span></div>
+    <div class="hero-cta">
+      <a href="https://github.com/feliperafa" target="_blank" class="btn btn-primary">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+        GitHub
+      </a>
+      <a href="https://www.linkedin.com/in/felipe-barros-640197167/" target="_blank" class="btn btn-outline">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+        LinkedIn
+      </a>
+    </div>
+  </div>
+  <div class="scroll-hint"><span>scroll</span><div class="line"></div></div>
+</section>
+
+<!-- ─── ABOUT ─── -->
+<div class="sw">
+  <div class="about-grid">
+    <div class="about-text reveal-left">
+      <div class="sec-label">// sobre mim</div>
+      <h2 class="sec-title">Quem sou eu</h2>
+      <p>Sou <span class="hl">Senior Frontend Engineer</span> e <span class="hl">Tech Lead</span> com mais de 6 anos de experiência construindo interfaces de alto impacto para empresas de grande porte como <span class="hl">Bradesco</span>, <span class="hl">NTT DATA</span> e <span class="hl">Accenture</span>.</p>
+      <p>Especialista em <span class="hl">React.js</span>, <span class="hl">Next.js</span>, <span class="hl">Angular</span> e <span class="hl">Vue.js</span>, com sólida atuação em arquitetura frontend, performance, segurança e entrega contínua em ambientes bancários e corporativos.</p>
+      <p>Além de codar, <span class="hl">lidero times</span>, facilito workshops técnicos e contribuo estrategicamente para produtos digitais de escala global — com foco em qualidade, mentoria e boas práticas.</p>
+    </div>
+    <div class="stats-grid reveal-right" id="stats">
+      <div class="stat-card">
+        <span class="stat-num" data-target="6">0</span>
+        <div class="stat-lbl">Anos de Exp.</div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-num" data-target="4">0</span>
+        <div class="stat-lbl">Empresas</div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-num" data-target="5">0</span>
+        <div class="stat-lbl">Frameworks</div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-num" data-target="5">0</span>
+        <div class="stat-lbl">Certificações</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── SKILLS ─── -->
+<div class="sw" id="skills">
+  <div class="skills-section reveal">
+    <div class="sec-label">// habilidades</div>
+    <h2 class="sec-title">Stack Técnico</h2>
+    <div class="skills-grid">
+      <div class="skill-card"><span class="skill-icon">⚛️</span><div class="skill-name">React.js</div><div class="skill-bar"><div class="skill-fill" data-level="95"></div></div></div>
+      <div class="skill-card"><span class="skill-icon">▲</span><div class="skill-name">Next.js</div><div class="skill-bar"><div class="skill-fill" data-level="92"></div></div></div>
+      <div class="skill-card"><span class="skill-icon">🅰</span><div class="skill-name">Angular</div><div class="skill-bar"><div class="skill-fill" data-level="85"></div></div></div>
+      <div class="skill-card"><span class="skill-icon">💚</span><div class="skill-name">Vue.js</div><div class="skill-bar"><div class="skill-fill" data-level="82"></div></div></div>
+      <div class="skill-card"><span class="skill-icon">🔷</span><div class="skill-name">TypeScript</div><div class="skill-bar"><div class="skill-fill" data-level="93"></div></div></div>
+      <div class="skill-card"><span class="skill-icon">🟨</span><div class="skill-name">JavaScript</div><div class="skill-bar"><div class="skill-fill" data-level="96"></div></div></div>
+      <div class="skill-card"><span class="skill-icon">🔧</span><div class="skill-name">CI/CD</div><div class="skill-bar"><div class="skill-fill" data-level="85"></div></div></div>
+      <div class="skill-card"><span class="skill-icon">🧪</span><div class="skill-name">Testing</div><div class="skill-bar"><div class="skill-fill" data-level="80"></div></div></div>
+      <div class="skill-card"><span class="skill-icon">☁️</span><div class="skill-name">Azure</div><div class="skill-bar"><div class="skill-fill" data-level="75"></div></div></div>
+      <div class="skill-card"><span class="skill-icon">🐙</span><div class="skill-name">Git/GitHub</div><div class="skill-bar"><div class="skill-fill" data-level="90"></div></div></div>
+      <div class="skill-card"><span class="skill-icon">🌐</span><div class="skill-name">Apache</div><div class="skill-bar"><div class="skill-fill" data-level="72"></div></div></div>
+      <div class="skill-card"><span class="skill-icon">🚀</span><div class="skill-name">Agile/Scrum</div><div class="skill-bar"><div class="skill-fill" data-level="88"></div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── EXPERIENCE ─── -->
+<div class="sw" id="experience">
+  <div class="reveal">
+    <div class="sec-label">// trajetória</div>
+    <h2 class="sec-title">Experiência Profissional</h2>
+  </div>
+  <div class="timeline">
+    <div class="tl-item reveal">
+      <div class="tl-card">
+        <div class="tl-period">OUT 2024 — PRESENTE &nbsp;·&nbsp; 1A 7M &nbsp;·&nbsp; Híbrido</div>
+        <div class="tl-company">Bradesco</div>
+        <div class="tl-role">Analista de Sistemas Sênior &nbsp;/&nbsp; Tech Lead Frontend</div>
+        <div class="tl-desc">Liderando a implementação de soluções frontend com React.js, Next.js e Angular para aplicações bancárias de grande escala. Colaborando com equipes de backend e DevOps com foco em segurança e performance. Facilitando workshops técnicos para capacitar o time em novas tecnologias.</div>
+        <div class="tags">
+          <span class="tag">React.js</span><span class="tag">Next.js</span><span class="tag">Angular</span><span class="tag">Tech Lead</span><span class="tag">Banking</span><span class="tag">Performance</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tl-item reveal">
+      <div class="tl-card">
+        <div class="tl-period">JUN 2022 — OUT 2024 &nbsp;·&nbsp; 2A 5M &nbsp;·&nbsp; Remoto</div>
+        <div class="tl-company">NTT DATA Europe &amp; Latam</div>
+        <div class="tl-role">Front-End Software Engineer</div>
+        <div class="tl-desc">Desenvolvimento de aplicações web modernas com React.js, Next.js e TypeScript para clientes globais. Implementei CI/CD com Azure DevOps, gerando +30% de eficiência nos releases. Atuei como mentor para novos membros da equipe, promovendo boas práticas de desenvolvimento.</div>
+        <div class="tags">
+          <span class="tag">React.js</span><span class="tag">Next.js</span><span class="tag">TypeScript</span><span class="tag">Azure DevOps</span><span class="tag">CI/CD</span><span class="tag">Mentoria</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tl-item reveal">
+      <div class="tl-card">
+        <div class="tl-period">NOV 2020 — JUN 2022 &nbsp;·&nbsp; 1A 8M &nbsp;·&nbsp; Recife</div>
+        <div class="tl-company">Accenture</div>
+        <div class="tl-role">Software Engineering Analyst</div>
+        <div class="tl-desc">Projeto e desenvolvimento de interfaces responsivas para aplicações corporativas com Vue.js e React. Implementação de automações de testes e pipelines de CI/CD, reduzindo falhas em produção. Participação em reuniões estratégicas com clientes para levantamento de requisitos.</div>
+        <div class="tags">
+          <span class="tag">Vue.js</span><span class="tag">React</span><span class="tag">CI/CD</span><span class="tag">Testing</span><span class="tag">Corporativo</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tl-item reveal">
+      <div class="tl-card">
+        <div class="tl-period">MAR 2019 — OUT 2020 &nbsp;·&nbsp; 1A 8M</div>
+        <div class="tl-company">MV</div>
+        <div class="tl-role">Analista de Suporte Júnior</div>
+        <div class="tl-desc">Suporte no módulo de cadeia de suprimentos, garantindo cumprimento de SLA. Atendimento, registro e resolução de solicitações, com administração das plataformas de tecnologia em operação e consultas SQL.</div>
+        <div class="tags">
+          <span class="tag">SQL</span><span class="tag">Suporte N2</span><span class="tag">SLA</span><span class="tag">Git</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── EDUCATION ─── -->
+<div class="sw" id="education">
+  <div class="reveal">
+    <div class="sec-label">// formação</div>
+    <h2 class="sec-title">Educação &amp; Certificações</h2>
+  </div>
+  <div class="edu-grid">
+    <div class="edu-card reveal">
+      <span class="edu-icon">🎓</span>
+      <div class="edu-degree">Análise e Desenvolvimento de Sistemas</div>
+      <div class="edu-inst">FICR — Faculdade Católica Imaculada Conceição do Recife</div>
+      <div class="edu-period">Recife, Pernambuco · Graduação</div>
+    </div>
+    <div class="edu-card reveal">
+      <span class="edu-icon">☁️</span>
+      <div class="edu-degree">Microsoft Azure AZ-900</div>
+      <div class="edu-inst">Microsoft — Azure Fundamentals</div>
+      <div class="edu-period">Certificação · Fundamentals</div>
+    </div>
+    <div class="edu-card reveal">
+      <span class="edu-icon">🛡️</span>
+      <div class="edu-degree">Microsoft Azure AZ-104</div>
+      <div class="edu-inst">Microsoft — Azure Administrator Associate</div>
+      <div class="edu-period">Certificação · Administrator Associate</div>
+    </div>
+    <div class="edu-card reveal">
+      <span class="edu-icon">⚙️</span>
+      <div class="edu-degree">Microsoft Azure AZ-204</div>
+      <div class="edu-inst">Microsoft — Developing Solutions for Microsoft Azure</div>
+      <div class="edu-period">Certificação · Developer Associate</div>
+    </div>
+    <div class="edu-card reveal">
+      <span class="edu-icon">📊</span>
+      <div class="edu-degree">Microsoft Azure DP-900</div>
+      <div class="edu-inst">Microsoft — Azure Data Fundamentals</div>
+      <div class="edu-period">Certificação · Data Fundamentals</div>
+    </div>
+    <div class="edu-card reveal">
+      <span class="edu-icon">🟠</span>
+      <div class="edu-degree">AWS Cloud Practitioner</div>
+      <div class="edu-inst">Amazon Web Services — Cloud Practitioner</div>
+      <div class="edu-period">Certificação · Foundational</div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── CONTACT ─── -->
+<div class="sw" id="contact">
+  <div class="contact-wrap reveal">
+    <div class="sec-label" style="justify-content:center">// contato</div>
+    <h2 class="sec-title">Vamos Conversar</h2>
+    <p>Aberto a novas oportunidades, freelas e conexões profissionais. Entre em contato pelo LinkedIn ou explore meus projetos no GitHub.</p>
+    <div class="contact-btns">
+      <a href="https://www.linkedin.com/in/felipe-barros-640197167/" target="_blank" class="btn btn-primary">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+        Conectar no LinkedIn
+      </a>
+      <a href="https://github.com/feliperafa" target="_blank" class="btn btn-outline">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+        Ver GitHub
+      </a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p>Desenvolvido com <span>&#10084;</span> por <span>Felipe Barros</span> &nbsp;·&nbsp; Senior Frontend Engineer &nbsp;·&nbsp; Recife, PE</p>
+</footer>
+
+<script>
+// ── CURSOR ──
+const dot = document.getElementById('cursor-dot');
+const ring = document.getElementById('cursor-ring');
+let mx = 0, my = 0, rx = 0, ry = 0;
+
+document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+
+function animateCursor() {
+  rx += (mx - rx) * 0.14;
+  ry += (my - ry) * 0.14;
+  dot.style.left  = mx + 'px';
+  dot.style.top   = my + 'px';
+  ring.style.left = rx + 'px';
+  ring.style.top  = ry + 'px';
+  requestAnimationFrame(animateCursor);
+}
+animateCursor();
+
+document.querySelectorAll('a, button').forEach(el => {
+  el.addEventListener('mouseenter', () => { dot.classList.add('hovered'); ring.classList.add('hovered'); });
+  el.addEventListener('mouseleave', () => { dot.classList.remove('hovered'); ring.classList.remove('hovered'); });
+});
+
+// ── PARTICLES CANVAS ──
+const canvas = document.getElementById('canvas-bg');
+const ctx = canvas.getContext('2d');
+let W, H, pts = [];
+
+function resize() {
+  W = canvas.width  = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', () => { resize(); buildPts(); });
+
+function buildPts() {
+  pts = [];
+  const n = Math.floor((W * H) / 12000);
+  for (let i = 0; i < n; i++) {
+    pts.push({
+      x: Math.random() * W, y: Math.random() * H,
+      vx: (Math.random() - 0.5) * 0.45,
+      vy: (Math.random() - 0.5) * 0.45,
+      r: Math.random() * 1.8 + 0.4,
+      o: Math.random() * 0.5 + 0.15
+    });
+  }
+}
+buildPts();
+
+function drawPts() {
+  ctx.clearRect(0, 0, W, H);
+  pts.forEach(p => {
+    p.x += p.vx; p.y += p.vy;
+    if (p.x < 0 || p.x > W) p.vx *= -1;
+    if (p.y < 0 || p.y > H) p.vy *= -1;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(0,229,255,${p.o})`;
+    ctx.fill();
+  });
+  for (let i = 0; i < pts.length; i++) {
+    for (let j = i + 1; j < pts.length; j++) {
+      const dx = pts[i].x - pts[j].x, dy = pts[i].y - pts[j].y;
+      const d = Math.sqrt(dx*dx + dy*dy);
+      if (d < 140) {
+        ctx.beginPath();
+        ctx.strokeStyle = `rgba(0,229,255,${(1 - d/140) * 0.18})`;
+        ctx.lineWidth = 0.5;
+        ctx.moveTo(pts[i].x, pts[i].y);
+        ctx.lineTo(pts[j].x, pts[j].y);
+        ctx.stroke();
+      }
+    }
+  }
+  requestAnimationFrame(drawPts);
+}
+drawPts();
+
+// ── TYPING ──
+const phrases = [
+  'React.js  ·  Next.js  ·  Angular  ·  Vue.js',
+  'TypeScript  ·  CI/CD  ·  Testing',
+  'Tech Lead  ·  Mentor  ·  Builder',
+  'Recife, PE  ·  Aberto a oportunidades'
+];
+let pi = 0, ci = 0, del = false;
+const typedEl = document.getElementById('typed');
+
+(function type() {
+  const cur = phrases[pi];
+  if (!del) {
+    typedEl.textContent = cur.slice(0, ++ci);
+    if (ci === cur.length) { del = true; return setTimeout(type, 2200); }
+  } else {
+    typedEl.textContent = cur.slice(0, --ci);
+    if (ci === 0) { del = false; pi = (pi + 1) % phrases.length; }
+  }
+  setTimeout(type, del ? 35 : 75);
+})();
+
+// ── SCROLL REVEAL + SKILLS + COUNTERS ──
+const reveals = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
+
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (!e.isIntersecting) return;
+    e.target.classList.add('visible');
+
+    // skill bars
+    e.target.querySelectorAll('.skill-fill').forEach(bar => {
+      bar.style.width = bar.dataset.level + '%';
+    });
+
+    // counters
+    e.target.querySelectorAll('.stat-num[data-target]').forEach(el => {
+      const tgt = +el.dataset.target;
+      let v = 0;
+      const step = tgt / 45;
+      const t = setInterval(() => {
+        v += step;
+        if (v >= tgt) { el.textContent = tgt + '+'; clearInterval(t); }
+        else el.textContent = Math.floor(v);
+      }, 28);
+    });
+  });
+}, { threshold: 0.12 });
+
+reveals.forEach(el => obs.observe(el));
+
+// ── NAVBAR SCROLL ──
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 60);
+});
+</script>
+</body>
+</html>

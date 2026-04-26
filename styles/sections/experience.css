@@ -1,0 +1,103 @@
+.timeline {
+  position: relative;
+  padding-left: 2rem;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.6rem;
+  bottom: 0;
+  width: 1px;
+  background: linear-gradient(to bottom, var(--cyan), var(--purple), transparent);
+}
+
+.tl-item {
+  position: relative;
+  margin-bottom: 2.5rem;
+  padding-left: 2rem;
+}
+
+.tl-item::before {
+  content: '';
+  position: absolute;
+  left: -2.35rem;
+  top: 0.6rem;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--cyan);
+  box-shadow: 0 0 16px var(--cyan);
+  border: 2px solid var(--bg);
+}
+
+.tl-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.4s ease, border-color 0.4s, box-shadow 0.4s;
+}
+
+.tl-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(to right, var(--cyan), transparent);
+}
+
+.tl-card:hover {
+  transform: translateX(10px);
+  border-color: rgba(0, 229, 255, 0.4);
+  box-shadow: var(--glow-c);
+}
+
+.tl-period {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.62rem;
+  letter-spacing: 2px;
+  color: var(--cyan);
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.tl-company {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.tl-role {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.tl-desc {
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.75;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1.2rem;
+}
+
+.tag {
+  padding: 0.25rem 0.8rem;
+  border: 1px solid rgba(0, 229, 255, 0.25);
+  border-radius: 50px;
+  font-size: 0.68rem;
+  color: var(--cyan);
+  letter-spacing: 1px;
+  background: rgba(0, 229, 255, 0.04);
+}

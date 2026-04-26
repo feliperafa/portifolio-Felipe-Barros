@@ -1,0 +1,33 @@
+#cursor-dot {
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  background: var(--cyan);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 12px var(--cyan);
+  transition: transform 0.1s;
+}
+
+#cursor-ring {
+  position: fixed;
+  width: 32px;
+  height: 32px;
+  border: 1px solid rgba(0, 229, 255, 0.5);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate(-50%, -50%);
+  transition: all 0.18s ease;
+}
+
+#cursor-dot.hovered {
+  transform: translate(-50%, -50%) scale(2.5);
+}
+
+#cursor-ring.hovered {
+  transform: translate(-50%, -50%) scale(1.6);
+  border-color: var(--cyan);
+}

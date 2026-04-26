@@ -1,0 +1,22 @@
+@import '../styles/base/variables.css';
+@import '../styles/base/reset.css';
+@import '../styles/base/keyframes.css';
+
+@import '../styles/ui/cursor.css';
+@import '../styles/ui/orbs.css';
+@import '../styles/ui/buttons.css';
+@import '../styles/ui/reveal.css';
+@import '../styles/ui/back-to-top.css';
+
+@import '../styles/layout/section.css';
+@import '../styles/layout/navbar.css';
+@import '../styles/layout/footer.css';
+
+@import '../styles/sections/hero.css';
+@import '../styles/sections/about.css';
+@import '../styles/sections/skills.css';
+@import '../styles/sections/experience.css';
+@import '../styles/sections/education.css';
+@import '../styles/sections/contact.css';
+
+@import '../styles/responsive.css';

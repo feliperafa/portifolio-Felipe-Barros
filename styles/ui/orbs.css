@@ -1,0 +1,26 @@
+.orb {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0.12;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.orb-1 {
+  width: 600px;
+  height: 600px;
+  background: var(--cyan);
+  top: -250px;
+  right: -250px;
+  animation: floatA 9s ease-in-out infinite;
+}
+
+.orb-2 {
+  width: 500px;
+  height: 500px;
+  background: var(--purple);
+  bottom: 0;
+  left: -250px;
+  animation: floatB 12s ease-in-out infinite;
+}
