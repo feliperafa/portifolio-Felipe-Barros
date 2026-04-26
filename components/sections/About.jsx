@@ -2,7 +2,7 @@ import { STATS } from '@/data/portfolio'
 
 export default function About() {
   return (
-    <div className="sw">
+    <div id="about" className="sw">
       <div className="about-grid">
         <div className="about-text reveal-left">
           <div className="sec-label">// sobre mim</div>
